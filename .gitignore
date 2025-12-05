@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+# package-lock.json - Keep this file for GitHub Actions cache
+
+# Translation cache and temp files
+*.translated
+.translation-cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+.env.local
+

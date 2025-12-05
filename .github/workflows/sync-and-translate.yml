@@ -1,0 +1,77 @@
+name: Sync Upstream and Translate
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allow manual trigger
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/workflows/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'glossary.json'
+      - '.gitignore'
+
+jobs:
+  sync-and-translate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+      
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools.git || true
+          git fetch upstream
+      
+      - name: Merge upstream changes
+        run: |
+          git checkout main
+          git merge upstream/main || true
+          # If merge conflict, keep ours (translated files)
+          git checkout --ours . || true
+          git add .
+          git commit -m "Merge upstream changes" || true
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Run translation
+        run: npm run translate
+        env:
+          TRANSLATE_KEY: ${{ secrets.TRANSLATE_KEY }}
+      
+      - name: Check for changes
+        id: check-changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and push translations
+        if: steps.check-changes.outputs.has_changes == 'true'
+        run: |
+          git add .
+          git commit -m "Auto-translate: Update Chinese translations [skip ci]" || exit 0
+          git push origin main
+

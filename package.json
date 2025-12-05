@@ -1,0 +1,21 @@
+{
+  "name": "system-prompts-and-models-of-ai-tools-zh",
+  "version": "1.0.0",
+  "description": "System Prompts and Models of AI Tools - Chinese Translation Version",
+  "type": "module",
+  "scripts": {
+    "translate": "node scripts/translate.js"
+  },
+  "keywords": [
+    "ai",
+    "prompts",
+    "translation",
+    "chinese"
+  ],
+  "author": "",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "translate": "^3.0.1"
+  }
+}
+
