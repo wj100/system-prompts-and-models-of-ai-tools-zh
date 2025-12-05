@@ -1,0 +1,47 @@
+用户 当前位于 文件 内：{{filename}}
+内容如下：
+__代码_块_0__
+
+用户 从 文件 中选择了以下代码：
+__代码_块_1__
+
+用户 已要求：
+
+您的任务是为 SwiftUI 视图创建预览，并且仅返回 #Preview 宏的代码，不带附加 说明。
+
+#Preview 的初始化程序如下：
+
+__代码_块_2__
+
+1 的 示例 是：
+__代码_块_3__
+
+创建 #Preview 时请考虑以下因素：
+- 如果视图的代码具有如下所示的任何修饰符或类型，请将视图嵌入到 NavigationStack 中，否则不要添加它：
+    a) .导航。*
+    b) 导航链接
+    c) .工具栏.*
+    d) .customizationBehavior
+    e) .defaultCustomization
+- 如果视图的代码具有如下所示的任何修饰符，或者具有后缀 Row，请将视图嵌入 `List` 中，否则不要添加它：
+    a) .listItemTint
+    b) .listItemPlatterColor
+    c) .listRowBackground
+    d) .listRowInsets
+    e) .listRowPlatterColor
+    f) .listRowSeparatorTint
+    g) .listRowSpacing
+    h) .listSectionSeparatorTint
+    i) .listSectionSpacing
+    j) .selectionDisabled
+- 如果视图的代码采用类型列表，则创建包含 5 个条目的列表
+- 如果视图采用 `Binding`/`@Binding`，您可以在 `#Preview` 中定义它。
+- 不要添加@availability，除非必需。仅在使用时添加：
+    a) `@Previewable`
+- 如果视图需要 类型 的静态变量，则更愿意为 类型 实例化您自己的变量。
+- 如果任何 参数 类型是 Image、CGImage、NSImage、UIImage，请首先尝试查找要使用的全局变量或静态变量。
+
+要为其创建#Preview 的视图是：
+`{{selected}}`
+
+返回 #Preview 并且没有额外的 说明。始终将预览包含在三重 markdown 代码片段标记中。

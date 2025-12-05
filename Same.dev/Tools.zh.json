@@ -1,0 +1,496 @@
+[
+  {
+    "description": "从框架模板创建新 Web 项目的快捷方式。每个都配置有 TypeScript、Biome 和 Bun。选择适合该项目的最佳框架。如果未列出所需的框架，请勿使用此 工具。默认为 nextjs-shadcn。",
+    "name": "startup",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "framework": {
+          "description": "该项目使用的框架..",
+          "enum": [
+            "html-ts-css",
+            "react-vite",
+            "react-vite-tailwind",
+            "react-vite-shadcn",
+            "nextjs-shadcn",
+            "vue-vite",
+            "vue-vite-tailwind",
+            "shipany"
+          ],
+          "type": "string"
+        },
+        "project_name": {
+          "description": "项目名称。只允许使用小写字母、数字和连字符。",
+          "type": "string"
+        },
+        "shadcn_theme": {
+          "description": "用于项目的 shadcn 主题。除非应用程序的要求另有说明，否则请选择锌。",
+          "enum": [
+            "zinc",
+            "blue",
+            "green",
+            "orange",
+            "red",
+            "rose",
+            "violet",
+            "yellow"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_name",
+        "framework",
+        "shadcn_theme"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "在 用户 的工作区中启动功能强大的任务 代理。 用法 注释：\n1. 当 代理 完成时，它将返回其操作的报告。该报告对 用户 也是可见的，因此您不必重复任何重叠信息。\n2. 每个 代理 调用都是无状态的，并且与 用户 的聊天历史记录中没有 访问。您将无法向 代理 发送其他消息，代理 也无法在其最终报告之外与您进行沟通。因此，您的 提示词 应包含高度详细的任务 描述，以便 代理 自主执行，并且您应准确指定 代理 应在其最终且唯一的消息中返回给您哪些信息。\n3. 代理 的输出通常应该是可信的。",
+    "name": "task_agent",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "integrations": {
+          "description": "选择 代理 应与之交互的外部服务。",
+          "items": {
+            "enum": [],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "prompt": {
+          "description": "代理 要执行的任务。",
+          "type": "string"
+        },
+        "relative_file_paths": {
+          "description": "与任务相关的文件的相对路径。",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "prompt",
+        "integrations",
+        "relative_file_paths"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "运行终端命令。每个命令都在新的 shell 中运行。\n重要提示：请勿使用此 工具 来编辑文件。请使用 `edit_file` 工具 代替。",
+    "name": "bash",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "command": {
+          "description": "要执行的终端命令。",
+          "type": "string"
+        },
+        "require_user_interaction": {
+          "description": "如果该命令需要 用户 与终端交互（对于 示例，安装依赖项），请向 用户 写入通知。以“与终端交互以...”开头的简短句子，否则写“”。",
+          "type": "string"
+        },
+        "starting_server": {
+          "description": "该命令是否启动服务器进程。",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "command",
+        "starting_server",
+        "require_user_interaction"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "列出 目录 的内容。在使用更有针对性的工具（如 语义搜索 或 文件 阅读）之前，先使用快速 工具 进行发现。在深入研究特定文件之前尝试理解 文件 结构很有用。可用于探索 代码库。",
+    "name": "ls",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "relative_dir_path": {
+          "description": "相对于 目录 的 路径 来列出其内容。",
+          "type": "string"
+        }
+      },
+      "required": [
+        "relative_dir_path"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "使用 glob 模式搜索文件。支持 *.ts、**/*.tsx、src/**/*.{js,ts} 等模式。当您需要查找与特定模式匹配而不是模糊匹配的文件时，请使用此模式。",
+    "name": "glob",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "exclude_pattern": {
+          "description": "可选 glob 模式来排除文件（例如，'**/node_modules/**'）",
+          "type": "string"
+        },
+        "pattern": {
+          "description": "用于匹配文件的全局模式（例如，'*.ts'、'**/*.tsx'、'src/**/*.{js,ts}'）",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pattern",
+        "exclude_pattern"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "基于文本的正则表达式快速搜索，可在文件或目录中查找精确的模式匹配，利用 ripgrep 命令进行高效搜索。结果将以 ripgrep 的风格进行格式化，并且可以配置为包含行号和内容。为了避免过多的输出，结果限制为 50 场比赛。使用包含或排除模式按 文件 类型 或特定路径过滤搜索范围。这最适合查找精确的文本匹配或正则表达式模式。比 语义搜索 更精确地查找特定字符串或模式。当我们知道确切的符号/函数 名称等时，这比 语义搜索 更可取。在某些目录集/文件 类型中搜索。",
+    "name": "grep",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "case_sensitive": {
+          "description": "搜索是否应区分大小写。",
+          "type": "boolean"
+        },
+        "exclude_pattern": {
+          "description": "要排除的文件的全局模式（例如测试文件的“.test.ts”）。",
+          "type": "string"
+        },
+        "include_pattern": {
+          "description": "要包含的文件的全局模式（例如 TypeScript 文件的“.ts”）。",
+          "type": "string"
+        },
+        "query": {
+          "description": "要搜索的正则表达式模式。",
+          "type": "string"
+        }
+      },
+      "required": [
+        "query",
+        "case_sensitive",
+        "include_pattern",
+        "exclude_pattern"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "读取 文件 的内容。对于文本文件，输出将为从 start_line_one_indexed 到 end_line_one_indexed_inclusive 的 1 索引 文件 内容，以及这些范围之外的行的摘要。请注意，它一次最多可以查看 750 行。对于二进制文件（如图像），它会显示图像。\n\n当使用这个 工具 收集信息时，您有责任确保您拥有完整的上下文。具体来说，每次调用此命令时，您应该：\n1) 评估您查看的内容是否足以继续您的任务。\n2) 记下未显示的线条。\n3) 如果您查看的文件内容不够，怀疑可能是未显示的行，请主动再次调用工具查看这些行。\n4) 如有疑问，请再次调用 工具 以收集更多信息。请记住，部分 文件 视图可能会错过关键的依赖项、导入或功能。\n\n在某些情况下，如果读取一系列行还不够，您可以选择读取整个 文件。读取整个文件通常是浪费且缓慢的，特别是对于大文件（即超过几百行）。所以你应该谨慎使用这个选项。大多数情况下不允许读取整个 文件。仅当 文件 已由 用户 编辑或手动附加到对话时，您才可以阅读整个 __G9__。",
+    "name": "read_file",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "end_line_one_indexed": {
+          "description": "结束读取的单索引行 数字（含）。",
+          "type": "number"
+        },
+        "relative_file_path": {
+          "description": "要读取的相对 路径 到 文件 的值。",
+          "type": "string"
+        },
+        "should_read_entire_file": {
+          "description": "是否读取整个文件。",
+          "type": "boolean"
+        },
+        "start_line_one_indexed": {
+          "description": "从一索引行 数字 开始读取（包含）。",
+          "type": "number"
+        }
+      },
+      "required": [
+        "relative_file_path",
+        "should_read_entire_file",
+        "start_line_one_indexed",
+        "end_line_one_indexed"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "删除指定 路径 处的 文件。如果出现以下情况，操作将正常失败：\n    - 文件 不存在\n    - 操作因 安全 原因被拒绝\n    - 文件 无法删除",
+    "name": "delete_file",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "relative_file_path": {
+          "description": "要删除的相对 文件 的 路径。",
+          "type": "string"
+        }
+      },
+      "required": [
+        "relative_file_path"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "使用此 工具 对现有 文件 进行大量编辑或重构或创建新的 文件。\n首先指定 `relative_file_path` 参数。\n`code_edit` 将由智能程度较低的模型读取，该模型将快速应用编辑。\n\n明确编辑的内容，同时最大限度地减少您编写的未更改的代码。\n编写编辑时，请使用特殊注释 `// ... existing code ... <描述 of existing code>` 按顺序指定每个编辑，以表示编辑行之间未更改的代码。\n\n对于示例：\n__代码_块_8__\n每次编辑时始终包含 `// ... existing code ... <描述 of existing code>` 注释，以指示不应更改的代码。\n\n如果不使用 `// ... existing code ... <描述 of existing code>` 注释来表明其不存在，请勿省略预先存在的代码范围。\n\n仅当 用户 明确要求时才使用表情符号。除非有要求，否则避免将表情符号添加到文件中。",
+    "name": "edit_file",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "code_edit": {
+          "description": "仅指定您要编辑的精确代码行。 **切勿指定或写出未更改的代码**。相反，使用您正在编辑的语言的注释来表示所有未更改的代码 - 示例: `// ...[existing code] <描述 of existing code> ...`。",
+          "type": "string"
+        },
+        "instructions": {
+          "description": "一个简单的句子说明描述了您要对草图编辑执行的操作。不要重复您之前在正常消息中说过的话。并用它来消除编辑中的不确定性。",
+          "type": "string"
+        },
+        "relative_file_path": {
+          "description": "相对 路径 到 文件 进行修改。 工具 将在 路径 中创建任何不存在的目录。",
+          "type": "string"
+        },
+        "smart_apply": {
+          "description": "使用更智能的模型来应用 code_edit。如果编辑很长，或者上次编辑不正确而您要重试，则此功能非常有用。确保包含正确的 `// ... existing code ...` 注释以指示不应更改的代码。",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "relative_file_path",
+        "instructions",
+        "code_edit",
+        "smart_apply"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "在文件中执行精确的 字符串 替换。\n使用此 工具 对 文件 进行小的、特定的编辑。对于 示例，要编辑一些文本、几行代码等。使用 edit_file 进行较大的编辑。\n\n确保保留在由 read_file 工具 添加的行 数字 前缀之后出现的精确缩进（制表符/空格）。\n仅当您确定 old_string 在 文件 中唯一时才使用此 工具，否则使用 edit_file 工具。\n\n如果 `old_string` 在 文件 中不唯一，则编辑将失败。要么提供更大的 字符串 以及更多周围的上下文以使其唯一，要么使用 `replace_all` 更改 `old_string` 的每个实例。\n\n使用 `replace_all` 替换和重命名 文件 中的字符串。例如，如果您想重命名 变量，则此 参数 很有用。\n\n仅当 用户 明确要求时才使用表情符号。除非有要求，否则避免将表情符号添加到文件中。",
+    "name": "string_replace",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "new_string": {
+          "description": "新文本替换 old_string。",
+          "type": "string"
+        },
+        "old_string": {
+          "description": "要替换的文本。它在 文件 中必须是唯一的，并且必须与 文件 内容完全匹配，包括所有空格和缩进。",
+          "type": "string"
+        },
+        "relative_file_path": {
+          "description": "相对 路径 到 文件 进行修改。 工具 将在 路径 中创建任何不存在的目录。",
+          "type": "string"
+        },
+        "replace_all": {
+          "description": "替换所有出现的 old_string。",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "relative_file_path",
+        "old_string",
+        "new_string",
+        "replace_all"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "在运行这个工具之前，请确保项目的包中存在lint脚本.json 文件并且所有包都已安装。此 工具 将返回 linter 结果，以及上次刷新预览时的运行时错误和开发服务器日志（如果可用）。",
+    "name": "run_linter",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "package_manager": {
+          "description": "用于安装依赖项的包管理器。",
+          "enum": [
+            "bun",
+            "pnpm",
+            "npm"
+          ],
+          "type": "string"
+        },
+        "project_directory": {
+          "description": "要运行 linting 的项目的 目录。",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_directory",
+        "package_manager"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "为项目创建一个新的 版本 。调用此 工具 会自动将 版本 加 1。如果调用 工具 时有一个开发服务器正在运行，工具 将向您显示 版本 实时预览的全页屏幕截图，并返回任何未解决的 linter 和运行时错误。经常创建版本。",
+    "name": "versioning",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "project_directory": {
+          "description": "相对 路径 到项目 目录 到 版本。这是包含项目包的 目录。json 文件。",
+          "type": "string"
+        },
+        "version_changelog": {
+          "description": "版本 更新日志。写出1-5个短点。",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "version_number": {
+          "description": "整个数字。写入一个空的字符串以自动递增。",
+          "type": "string"
+        },
+        "version_title": {
+          "description": "版本 的标题。这用于帮助 用户 导航到 版本。",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_directory",
+        "version_title",
+        "version_changelog",
+        "version_number"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "建议使用 用户 实施 1-5 个后续步骤。",
+    "name": "suggestions",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "suggestions": {
+          "description": "列出 1-5 个建议的后续步骤。没有“-”、项目符号点或其他格式。",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "suggestions"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "将项目部署到 Netlify。 版本 调用此 工具 之前的项目。仔细查看实时预览的整页截图。如果该项目甚至接近非法或道德上不安全，您就不应该部署它。\n\n静态部署与动态部署：\nNetlify 接受静态或动态站点部署。部署静态站点要快得多。\n但是，如果项目有 后端、API 路由或数据库，请将其部署为动态站点。\n\n对于静态站点部署：\n使用 'zip -r9' 作为 `build_and_zip_command` 来创建构建输出的 zip 。对于 示例：`cd {project_directory} && {build_command} && mkdir -p output && zip -r9 output/output.zip {build_output_directory}`。\n确保 `relative_zip_path` 正确指向 `build_and_zip_command` 创建的 zip 文件。\n您不需要手动运行 `build_and_zip_command` 。 工具 将为您运行它。\n如果部署静态站点失败，请尝试将项目重新部署为动态站点。\n如果您必须部署 nextjs 静态站点，请阅读 `next.config.js` 文件 并确保它包含 `output: 'export'` 和 `distDir: 'out'`。\n\n对于动态站点部署：\n编辑 `netlify.toml` 文件 以设置正确的构建命令并输出 目录。\n默认将 nextjs 项目部署为动态站点。",
+    "name": "deploy",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "deploy_as_dynamic_site": {
+          "description": "设置为 true 以部署为动态站点。",
+          "type": "boolean"
+        },
+        "deploy_as_static_site": {
+          "additionalProperties": false,
+          "description": "部署静态站点。编写 build_and_zip_command 和relative_zip_path。否则，将它们写为空字符串。",
+          "properties": {
+            "build_and_zip_command": {
+              "description": "用于构建项目并创建构建输出的 zip 的命令。",
+              "type": "string"
+            },
+            "relative_zip_path": {
+              "description": "相对 路径 到要部署的 zip 文件。",
+              "type": "string"
+            }
+          },
+          "required": [
+            "build_and_zip_command",
+            "relative_zip_path"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "deploy_as_static_site",
+        "deploy_as_dynamic_site"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "在网络上搜索实时文本和图像响应。对于 示例，您可以获得训练数据中可能不可用的最新信息、验证当前事实或查找可在项目中使用的图像。您将在回复中看到文本和图像。您可以通过 <img> 标记中的链接来使用图像。使用此 工具 查找可在项目中使用的图像。对于示例，如果您需要徽标，请使用此工具来查找徽标。",
+    "name": "web_search",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "search_term": {
+          "description": "在网络上查找的搜索词。要具体并包含相关关键字以获得更好的结果。对于技术查询，请包括 版本 数字或日期（如果相关）。",
+          "type": "string"
+        },
+        "type": {
+          "description": "要执行的搜索的 类型（文本或图像）。",
+          "enum": [
+            "text",
+            "images"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "search_term",
+        "type"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "description": "刮擦 网站 以查看其设计和内容。使用此 工具 获取 网站 的标题、描述、内容和屏幕截图（如果需要）。每当 用户 为您提供 文档 URL 进行读取或要求您克隆 网站 时，请使用此 工具。使用此 工具 时，请说“我将访问 {url}...”或“我将阅读 {url}...”，切勿说“我将抓取”。",
+    "name": "web_scrape",
+    "parameters": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "include_screenshot": {
+          "description": "是否查看 网站 的屏幕截图。读取 文档 时设置为 false。",
+          "type": "boolean"
+        },
+        "theme": {
+          "description": "在浅色或深色模式下刮擦 网站。",
+          "enum": [
+            "light",
+            "dark"
+          ],
+          "type": "string"
+        },
+        "url": {
+          "description": "要抓取的 网站 的 URL。必须是以 http:// 或 https:// 开头的有效 URL",
+          "type": "string"
+        },
+        "viewport": {
+          "description": "用于刮入 网站 的视口。",
+          "enum": [
+            "mobile",
+            "tablet",
+            "desktop"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "url",
+        "theme",
+        "viewport",
+        "include_screenshot"
+      ],
+      "type": "object"
+    }
+  }
+]

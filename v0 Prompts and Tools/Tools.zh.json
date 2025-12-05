@@ -1,0 +1,370 @@
+{
+  "tools": [
+    {
+      "name": "FetchFromWeb",
+      "description": "当您有特定的 URL 可供阅读时，从网页中获取全文内容。返回带有元数据的干净、已解析的文本。\n\n**何时使用：**\n• **已知 URL** - 您有需要完整阅读的特定页面/文章\n• **深度内容分析** - 需要全文，而不仅仅是搜索结果片段  \n• **文档 阅读** - 外部文档、教程或参考材料\n• **后续研究** - 网络搜索后，获取特定的有希望的结果\n\n**你得到什么：**\n• 完整的页面文本内容（清理和解析）\n• 元数据：标题、作者、发布日期、网站图标、图像\n• 在单个请求中处理多个 URL\n\n**与 SearchWeb：** 当您确切知道要读取哪些 URL 时使用此选项；首先使用 SearchWeb 查找 URL。",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "taskNameActive": {
+            "description": "2-5 个单词描述任务运行时的情况。将显示在UI中。对于 示例，“检查 SF 天气”。",
+            "type": "string"
+          },
+          "taskNameComplete": {
+            "description": "任务完成后用 2-5 个词描述任务。将显示在UI中。它不应该表示成功或失败，而只是表示任务已完成。对于 示例，“查找 SF 天气”。",
+            "type": "string"
+          },
+          "urls": {
+            "description": "用于从中获取全文内容的 URL。适用于任何可公开访问的网页。\n\n**需要时使用：**\n• 完整的文章或文档文本（不仅仅是搜索片段）\n• 来自已知 URL 的特定内容\n• 完成文档 页面或教程\n• 需要阅读整页的详细信息\n\n**示例：**\n• [“https://nextjs.org/docs/app/building-your-application/routing\"]\n• [\"https://blog.示例.com/article-title\", \"https://docs.示例.com/api-reference\"]",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "urls",
+          "taskNameActive",
+          "taskNameComplete"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "GrepRepo",
+      "description": "在 仓库 的 文件 内容中搜索正则表达式模式。返回具有 文件 路径和行号的匹配行，非常适合代码探索和分析。\n\n主要用例：\n• 查找函数 定义：'函数\\s+myFunction' 或'const\\s+\\w+\\s*='\n• 查找导入/导出：“import.*from”或“export\\s+(default|\\{)”\n• 搜索特定类：“class\\s+ComponentName”或“接口\\s+\\w+”\n• 查找API 调用：'fetch\\(' 或'api\\.(get|post)'\n• 发现配置：“process\\.env”或特定配置键\n• 跟踪用法 模式：组件名称、变量或方法调用\n• 查找特定文本：“用户 Admin”或“TODO”\n\n搜索策略：\n• 使用 glob 模式重点关注相关 文件 类型（*.ts、*.jsx、src/**）\n• 结合路径 过滤特定目录\n• 从广泛开始，然后通过更具体的模式缩小范围\n• 请记住：不区分大小写的匹配，最多返回 200 个结果",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "globPattern": {
+            "description": "可选：用于过滤搜索文件的全局模式（例如，'*.js'、'*.{ts,tsx}'、'src/**'）。如果省略，则搜索所有文件（尊重潜在的全局忽略）。",
+            "type": "string"
+          },
+          "path": {
+            "description": "可选：要在其中搜索的 目录 的绝对 路径。如果省略，则搜索所有文件。",
+            "type": "string"
+          },
+          "pattern": {
+            "description": "要在 文件 内容中搜索的正则表达式 (regex) 模式（例如，'函数\\s+myFunction'、'import\\s+\\{.*\\}\\s+from\\s+.*'）。",
+            "type": "string"
+          },
+          "taskNameActive": {
+            "description": "2-5 个单词描述任务运行时的情况。将显示在UI中。对于 示例，“检查 SF 天气”。",
+            "type": "string"
+          },
+          "taskNameComplete": {
+            "description": "任务完成后用 2-5 个词描述任务。将显示在UI中。它不应该表示成功或失败，而只是表示任务已完成。对于 示例，“查找 SF 天气”。",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pattern",
+          "taskNameActive",
+          "taskNameComplete"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "LSRepo",
+      "description": "列出 仓库 中的文件和目录。返回使用基于 可选 模式的过滤按字母顺序排序的 文件 路径。\n\n常见用例：\n• 探索仓库 结构并了解项目布局\n• 查找特定目录中的文件（例如“src/”、“components/”）\n• 查找配置 文件、文档 或特定的文件 类型\n• 在深入特定领域之前先了解可用文件的概述\n\n温馨提示：\n• 使用特定路径来缩小结果范围（最多返回 200 个条目）\n• 与忽略模式结合以排除不相关的文件\n• 从根目录 开始获取项目概述，然后向下钻取",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "globPattern": {
+            "description": "可选：用于过滤列出的文件的全局模式（例如，“*.js”、“*.{ts,tsx}”、“src/**”）。如果省略，则列出所有文件。",
+            "type": "string"
+          },
+          "ignore": {
+            "description": "要忽略的全局模式列表",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "path": {
+            "description": "绝对 路径 到 目录 列出（必须是绝对的，而不是相对的）",
+            "type": "string"
+          },
+          "taskNameActive": {
+            "description": "2-5 个单词描述任务运行时的情况。将显示在UI中。对于 示例，“检查 SF 天气”。",
+            "type": "string"
+          },
+          "taskNameComplete": {
+            "description": "任务完成后用 2-5 个词描述任务。将显示在UI中。它不应该表示成功或失败，而只是表示任务已完成。对于 示例，“查找 SF 天气”。",
+            "type": "string"
+          }
+        },
+        "required": [
+          "taskNameActive",
+          "taskNameComplete"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "ReadFile",
+      "description": "智能读取 文件 内容 - 根据您的 查询，在较小时返回完整文件、分页块，或在较大时返回目标块。\n\n**它是如何工作的：**\n• **小文件**（≤2000 行）- 返回完整内容\n• **大文件**（>2000 行）- 使用 AI 基于 查询 查找并返回相关块\n• **二进制文件** - 返回图像，适当处理 blob 内容\n• 为了便于阅读，任何超过 2000 个字符的行都会被截断\n• 可以提供起始行和结束行来读取文件 的特定部分\n\n**何时使用：**\n• **编辑之前** - 始终在进行更改之前阅读文件\n• **了解实现** - 特定特性或功能的工作原理\n• **查找特定代码** - 在大文件中查找模式、函数或配置  \n• **代码分析** - 了解结构、依赖关系或模式\n\n**查询策略：**\n默认情况下，您应该避免查询或分页，以便可以收集完整的上下文。\n如果您得到 警告 说 文件 太大，那么您应该具体说明您正在寻找的内容 - 查询 越有针对性，返回的相关块就越好。",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "endLine": {
+            "description": "结束行 数字（从 1 开始）。包含足够的行来捕获完整的函数、类或逻辑代码块。",
+            "type": "number"
+          },
+          "filePath": {
+            "description": "要读取的 文件 的绝对 路径（例如，“app/about/page.tsx”）。不支持相对路径。您必须提供绝对的 路径。",
+            "type": "string"
+          },
+          "query": {
+            "description": "您在 文件 中寻找什么。 必需 用于大文件（>2000 行），可选 用于较小文件。\n\n**查询 类型：**\n• **函数/hook 用法** - “如何使用useAuth？”或“查找所有 API 调用”\n• **实现 详细信息** - “身份验证 逻辑”或“错误 处理模式”\n• **具体功能** - “表单验证”或“数据库查询”\n• **代码模式** - “React 组件”或“TypeScript 接口”\n• **配置** - “环境 变量”或“路由设置”\n\n**示例：**\n• “让我看看错误 处理实现”\n•“查找表单验证逻辑”",
+            "type": "string"
+          },
+          "startLine": {
+            "description": "起始行 数字（从 1 开始）。使用 grep 结果或估计位置到 目标 特定代码段。",
+            "type": "number"
+          },
+          "taskNameActive": {
+            "description": "2-5 个单词描述任务运行时的情况。将显示在UI中。对于 示例，“检查 SF 天气”。",
+            "type": "string"
+          },
+          "taskNameComplete": {
+            "description": "任务完成后用 2-5 个词描述任务。将显示在UI中。它不应该表示成功或失败，而只是表示任务已完成。对于 示例，“查找 SF 天气”。",
+            "type": "string"
+          }
+        },
+        "required": [
+          "filePath",
+          "taskNameActive",
+          "taskNameComplete"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "InspectSite",
+      "description": "截取屏幕截图以验证 用户 报告的视觉错误或从实时网站捕获参考设计以供娱乐。\n\n**用于：**\n• **视觉错误验证** - 当用户报告布局问题、元素未对齐或样式问题时\n• **网站 娱乐** - 获取参考设计（例如，“重新创建 Nike 主页”、“复制 Stripe 的定价页面”）\n\n**技术：** 将本地主机 URL 转换为预览 URL，优化屏幕截图大小，支持多个 URL。",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "taskNameActive": {
+            "description": "2-5 个单词描述任务运行时的情况。将显示在UI中。对于 示例，“检查 SF 天气”。",
+            "type": "string"
+          },
+          "taskNameComplete": {
+            "description": "任务完成后用 2-5 个词描述任务。将显示在UI中。它不应该表示成功或失败，而只是表示任务已完成。对于 示例，“查找 SF 天气”。",
+            "type": "string"
+          },
+          "urls": {
+            "description": "用于捕获屏幕截图的 URL。支持实时网站和本地开发服务器。\n\n**支持的 URL 类型：**\n• **实时网站**：“https://示例.com\",”https://app.vercel.com/dashboard\"\n• **本地开发**：“http://localhost:3000\"（自动转换为 CodeProject 预览 URL）\n• **特定页面**：包括完整路径，例如“https://myapp.com/dashboard\" 或“localhost:3000/products”\n\n**最佳实践：**\n• 使用特定的页面路由而不仅仅是主页进行有针对性的检查\n• 包含本地主机 URL 以验证您的 CodeProject 预览是否正常工作\n• 可以在单个请求中捕获多个 URL 以进行比较",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "urls",
+          "taskNameActive",
+          "taskNameComplete"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "SearchWeb",
+      "description": "使用高质量来源执行智能网络搜索并返回全面的引用答案。优先考虑 Vercel 生态系统产品的第一方 文档。\n\n主要用例：\n- 技术 文档 - 最新功能、API 参考资料、配置 指南\n- 当前最佳实践 - 最新的开发模式和建议  \n- 产品特定信息 - Vercel、Next.js、AI SDK 和生态系统工具\n- 版本 特定详细信息 - 新版本、重大更改、迁移指南\n- 外部集成 - 第三方 服务 设置、身份验证 流程\n- 时事 - Web 开发的最新进展、框架更新\n\n何时使用：\n- 用户 明确请求网络搜索或外部信息\n- 有关 Vercel 产品的问题（必需 的准确性）\n- 训练数据中的信息可能已过时\n- 当前 代码库 中不提供技术细节\n- 工具、框架或方法的比较\n- 查找 错误 消息、调试指南或故障排除\n\n搜索策略：\n- 进行多次有针对性的搜索以实现全面覆盖\n- 使用特定的 版本 数字和产品名称以确保精度\n- 利用第一方来源 (isFirstParty: true) 进行 Vercel 生态系统查询",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "isFirstParty": {
+            "description": "启用高质量的第一方 文档 搜索 - 在查询 Vercel 生态系统产品时设置为 true，以便从精选的知识库中获得更快、更准确和最新的信息。\n\n始终使用 isFirstParty: true 用于：\n- 核心 Vercel 产品：Next.js、Vercel 平台、部署 功能、环境 变量\n- 开发工具：Turborepo、Turbopack、Vercel CLI、Vercel 工具栏\n- AI/ML 产品：AI SDK、v0、AI 网关、工作流程、流体计算\n- 框架 支持：Nuxt、Svelte、SvelteKit 集成\n- 平台 功能：Vercel 市场、Vercel 队列、分析、监控\n\n支持的域：[nextjs.org、turbo.build、vercel.com、sdk.vercel.ai、svelte.dev、react.dev、tailwindcss.com、typescriptlang.org、ui.shadcn.com、radix-ui.com、authjs.dev、date-fns.org、orm.drizzle.team、 playwright.dev、remix.run、vitejs.dev、www.framer.com、www.prisma.io、vuejs.org、社区.vercel.com、supabase.com、upstash.com、neon.tech、v0.app、docs.edg.io、docs.stripe.com、effect.网站、flags-sdk.dev]\n\n为什么使用第一方搜索：\n- Vercel 生态系统比一般网络搜索准确度更高\n- 最新功能更新和 API 更改\n- 官方示例和最佳实践\n- 全面的故障排除指南\n\n要求：当提及任何 Vercel 产品时，您必须将 SearchWeb 与 isFirstParty: true 一起使用，以确保信息准确、最新。",
+            "type": "boolean"
+          },
+          "query": {
+            "description": "要在网络上执行的搜索 查询。要具体、有针对性，以获得最佳结果。\n\n示例：\n- “Next.js 15 个应用程序路由器功能”- 适用于特定技术版本/功能\n- “Vercel 部署 环境 变量” - 适用于产品特定的 文档\n- “React 服务器组件最佳实践 2025” - 当前最佳实践\n- “Tailwind CSS 网格布局” - 针对特定 实现 指南\n- “TypeScript 严格模式 配置” - 详细的技术设置",
+            "type": "string"
+          },
+          "taskNameActive": {
+            "description": "2-5 个单词描述任务运行时的情况。将显示在UI中。对于 示例，“检查 SF 天气”。",
+            "type": "string"
+          },
+          "taskNameComplete": {
+            "description": "任务完成后用 2-5 个词描述任务。将显示在UI中。它不应该表示成功或失败，而只是表示任务已完成。对于 示例，“查找 SF 天气”。",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query",
+          "taskNameActive",
+          "taskNameComplete"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "TodoManager",
+      "description": "管理复杂、多步骤项目的结构化待办事项列表。跟踪里程碑级任务的进度并生成技术 实现 计划。\n\n**核心工作流：**\n1. **set_tasks** - 将项目分为 3-7 个里程碑任务（不同的系统、主要功能、集成）\n2. **move_to_task** - 完成当前工作，专注于下一个任务\n\n**任务指南：**\n• **里程碑级任务** - “构建主页”、“设置身份验证”、“添加数据库”（不是微步骤）\n• **一页 = 一项任务** - 不要将单个页面分成多个任务\n• **UI 在 后端** 之前 - 首先是脚手架页面，然后添加数据/身份验证/集成\n• **总共≤10 项任务** - 保持专注且易于管理\n• **没有模糊的任务** - 切勿使用“抛光”、“测试”、“最终确定”或其他无意义的废话\n\n**何时使用：**\n• 具有需要协同工作的多个不同系统的项目\n• 需要单独的面向用户 和管理组件的应用程序  \n• 具有多个独立功能的复杂集成\n\n**何时不使用：**\n• 单一内聚构建（即使很复杂）- 登陆页面、表单、组件\n• 琐碎或单步任务\n• 对话/信息请求\n\n**示例：**\n\n• **多个系统**：“使用受身份验证保护的管理仪表板构建候补名单表格”\n  →“获取数据库 集成，创建候补表格，构建管理仪表板，设置身份验证保护”\n\n• **具有独特功能的应用程序**：“使用 用户 帐户和收藏夹创建菜谱应用程序”\n  →“设置身份验证，构建配方浏览器，创建用户配置文件，添加收藏夹系统”\n\n• **复杂集成**：“将经过审核的用户 生成的内容添加到我的网站”\n  →“获取数据库集成，创建内容提交，构建审核仪表板，设置用户管理”\n\n• **跳过 TodoManager**：“构建 邮箱 SaaS 登录页面”或“添加联系表单”或“创建定价部分”\n  → 跳过待办事项 - 单个内聚组件，直接构建",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "description": "用于复杂、多步骤任务的待办事项管理 操作：\n\n**核心行动：**\n• **set_tasks** - 创建初始任务分解（最多 7 个里程碑级任务）\n• **move_to_task** - 完成当前工作并专注于下一个特定任务\n• **add_task** - 将单个任务添加到现有列表\n\n**实用程序操作：**\n• **read_list** - 查看当前待办事项列表而不进行更改\n• **mark_all_done** - 完成所有任务（项目已完成）\n\n**何时使用：** 多步骤项目、复杂的实施、需要 3 个以上步骤的任务。跳过琐碎或单步任务。",
+            "enum": [
+              "add_task",
+              "set_tasks",
+              "mark_all_done",
+              "move_to_task",
+              "read_list"
+            ],
+            "type": "string"
+          },
+          "moveToTask": {
+            "description": "move_to_task 要关注的确切任务名称。将所有先前任务标记为已完成。",
+            "type": "string"
+          },
+          "task": {
+            "description": "add_task 的任务 描述。使用里程碑级别的任务，而不是微步骤。",
+            "type": "string"
+          },
+          "taskNameActive": {
+            "description": "2-5 个单词描述任务运行时的情况。将显示在UI中。对于 示例，“检查 SF 天气”。",
+            "type": "string"
+          },
+          "taskNameComplete": {
+            "description": "任务完成后用 2-5 个词描述任务。将显示在UI中。它不应该表示成功或失败，而只是表示任务已完成。对于 示例，“查找 SF 天气”。",
+            "type": "string"
+          },
+          "tasks": {
+            "description": "set_tasks 的完整任务列表。首先变为进行中，rest 待办事项。",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "action",
+          "taskNameActive",
+          "taskNameComplete"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "SearchRepo",
+      "description": "启动一个新的 代理，它使用多种搜索策略（grep、文件 列表、内容阅读）来搜索和探索 代码库。 \n\n返回相关文件和上下文信息，以回答有关代码结构、功能和内容的查询。\n\n**核心能力：**\n- 整个 仓库 的 文件 发现和内容分析\n- 使用正则表达式进行模式匹配搜索特定的代码结构\n- 目录探索和项目结构理解\n- 智能 文件 选择和内容提取以及大文件分块\n- 结合搜索结果和代码分析的上下文答案\n\n**何时使用：**\n- **架构探索** - 了解项目结构、依赖关系和模式\n- **重构准备** - 查找函数、组件或模式的所有实例\n- 当任务明显受益于带有新上下文窗口的单独 代理 时，委派给子代理",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "goal": {
+            "description": "简短的上下文（1-3 句话）说明您搜索的原因以及您打算如何处理结果。\n\n示例：\n- “我需要了解 身份验证 流程才能添加 OAuth 支持。”\n- “我正在寻找所有数据库交互来优化查询。”",
+            "type": "string"
+          },
+          "query": {
+            "description": "描述您在 代码库 中寻找的内容。可以是逗号分隔的文件、代码模式、功能或一般探索任务。\n\n查询 类型：\n- **读取多个文件**：“components/ui/button.tsx，utils/api.ts”\n- **功能搜索**：“身份验证逻辑”、“数据库连接设置”、“用于用户管理的API端点”\n- **代码模式**：“使用 useState 的 React 组件”、“错误 处理模式”\n- **重构任务**：“查找 getCurrentUser 函数 的所有用法”、“查找按钮样式”、“配置文件和 环境 设置”\n- **架构探索**：“路由配置”、“状态管理模式”\n- **了解 代码库 结构**：“给我一个 代码库 的概述”（精确的短语） - **当您不知道 代码库 或从哪里开始时，从这里开始**",
+            "type": "string"
+          },
+          "taskNameActive": {
+            "description": "2-5 个单词描述任务运行时的情况。将显示在UI中。对于 示例，“检查 SF 天气”。",
+            "type": "string"
+          },
+          "taskNameComplete": {
+            "description": "任务完成后用 2-5 个词描述任务。将显示在UI中。它不应该表示成功或失败，而只是表示任务已完成。对于 示例，“查找 SF 天气”。",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query",
+          "taskNameActive",
+          "taskNameComplete"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "GenerateDesignInspiration",
+      "description": "产生设计灵感，确保您的一代在视觉上具有吸引力。 \n\n何时使用：\n- 模糊的设计要求 - 用户 要求“一个漂亮的登陆页面”或“现代仪表板”\n- 需要增强创意 - 基本要求需要视觉灵感和特异性\n- 设计方向 必需 - 没有提供明确的美学、配色方案或视觉风格\n- 复杂的 UI/UX 项目 - 多部分布局、品牌或 用户 体验流程\n\n在以下情况下跳过：\n- 后端/API 工作 - 不涉及视觉设计组件\n- 细微的样式调整 - 简单的 CSS 更改或小调整\n- 设计已经详细 - 用户 有特定的模型、线框图或详细要求\n- 复制现有设计 - 用户 提供精确的设计来复制\n\n重要提示：如果您生成了设计概要，则必须遵循它。",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "description": "可选 设计线索、品牌形容词、约束。",
+            "type": "string"
+          },
+          "goal": {
+            "description": "高级产品/功能或 UX 目标。",
+            "type": "string"
+          },
+          "taskNameActive": {
+            "description": "2-5 个单词描述任务运行时的情况。将显示在UI中。对于 示例，“检查 SF 天气”。",
+            "type": "string"
+          },
+          "taskNameComplete": {
+            "description": "任务完成后用 2-5 个词描述任务。将显示在UI中。它不应该表示成功或失败，而只是表示任务已完成。对于 示例，“查找 SF 天气”。",
+            "type": "string"
+          }
+        },
+        "required": [
+          "goal",
+          "taskNameActive",
+          "taskNameComplete"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "name": "GetOrRequestIntegration",
+      "description": "检查 集成 状态，检索 环境 变量，并获取实时数据库模式。在继续之前自动向用户请求缺少的集成。\n\n**它提供什么：**\n• **集成 状态** - 连接服务和 配置 状态\n• **环境 变量** - 可用的项目环境变量和缺少的要求\n• **实时数据库架构** - SQL 集成的实时表/列信息、表的 RLS 策略（如果配置）（Supabase、Neon 等）。使用它而不是从文件中读取脚本来了解连接集成的数据库架构。 \n• **集成 示例** - 示例 代码模板的链接（如果可用）\n\n**何时使用：**\n• **构建 集成 功能之前** - 身份验证、支付、数据库操作、API 调用\n• **调试 集成 问题** - 缺少环境变量、连接问题、模式不匹配\n• **项目发现** - 了解可以使用哪些服务\n• **需要数据库模式** - 在编写 SQL 查询或 ORM 操作之前\n\n**密钥 行为：**\n停止执行并请求 用户 设置以查找缺失的集成，确保所有 必需 服务在代码生成之前已连接。",
+      "parameters": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "additionalProperties": false,
+        "properties": {
+          "names": {
+            "description": "要检查或请求的特定 集成 名称。省略获取所有连接的集成和 环境 变量的概述。\n\n**何时指定集成：**\n• 用户 想要构建需要特定服务（身份验证、数据库、支付）的东西\n• 需要用于 SQL 集成的数据库架构或 RLS 策略（Supabase、Neon、PlanetScale）\n• 检查必需 集成是否配置正确\n• 在实现集成 相关功能之前\n\n**可用集成：** Upstash for Redis、Upstash Search、Neon、Supabase、Groq、Grok、fal、Deep Infra、Stripe、Blob、Edge Config、Vercel AI Gateway\n\n**示例：**\n• [\"Supabase\"] - 获取数据库模式并检查身份验证设置\n• [] 或省略 - 获取所有连接的集成和环境变量的概述",
+            "items": {
+              "enum": [
+                "Upstash for Redis",
+                "Upstash Search",
+                "Neon",
+                "Supabase",
+                "Groq",
+                "Grok",
+                "fal",
+                "Deep Infra",
+                "Stripe",
+                "Blob",
+                "Edge Config",
+                "Vercel AI Gateway"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "taskNameActive": {
+            "description": "2-5 个单词描述任务运行时的情况。将显示在UI中。对于 示例，“检查 SF 天气”。",
+            "type": "string"
+          },
+          "taskNameComplete": {
+            "description": "任务完成后用 2-5 个词描述任务。将显示在UI中。它不应该表示成功或失败，而只是表示任务已完成。对于 示例，“查找 SF 天气”。",
+            "type": "string"
+          }
+        },
+        "required": [
+          "taskNameActive",
+          "taskNameComplete"
+        ],
+        "type": "object"
+      }
+    }
+  ]
+}
