@@ -1,6 +1,6 @@
 # 如何获取 [Amp](https://ampcode.com) 的系统提示词
 
-1.使用VScode登录放大器
+1.使用VScode登录士兵
 2.问题短接查询到Amp
 3. 按住 Alt (Windows) 或 Option (macOS) 并单击工作区按钮
 
