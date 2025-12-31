@@ -1,0 +1,504 @@
+[
+  {
+    "name": "computer",
+    "description": "使用鼠标和键盘与网络浏览器交互并截取屏幕截图。如果您没有有效的选项卡 ID，请首先使用 tabs_context 来获取可用的选项卡。\n* 每当您打算单击某个元素（例如图标）时，您应该在移动 cursor 之前查阅屏幕截图以确定该元素的坐标。\n* 如果您尝试单击程序或链接，但即使在等待后也无法加载，请尝试调整单击位置，以便 cursor 的尖端在视觉上落在您要单击的元素上。\n* 确保单击任何按钮、链接、图标等时，cursor 尖端位于元素的中心。除非有要求，否则不要单击边缘的框。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "left_click",
+            "right_click",
+            "type",
+            "screenshot",
+            "wait",
+            "scroll",
+            "key",
+            "left_click_drag",
+            "double_click",
+            "triple_click",
+            "zoom",
+            "scroll_to",
+            "hover"
+          ],
+          "description": "要执行的 操作：\n* `left_click`：在指定坐标处单击鼠标左键。\n* `right_click`：在指定坐标处单击鼠标右键可打开上下文菜单。\n* `double_click`：在指定坐标处双击鼠标左键。\n* `triple_click`：在指定坐标处三次单击鼠标左键。\n* `类型`: 类型 一个 字符串 文本。\n* `screenshot`：截取屏幕截图。\n* `wait`：等待指定的 数字 秒。\n* `scroll`：在指定坐标处向上、向下、向左或向右滚动。\n* `密钥`：按特定键盘密钥。\n* `left_click_drag`：从起始坐标拖动到坐标。\n* `zoom`：截取特定区域的屏幕截图以便仔细检查。\n* `scroll_to`：使用 read_page 或查找工具中的元素引用 ID 将元素滚动到视图中。\n* `hover`：将鼠标cursor移动到指定坐标或元素处，无需点击。对于显示工具提示、下拉菜单或触发悬停状态很有用。"
+        },
+        "coordinate": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "(x, y)：x（距左边缘的像素）和 y（距上边缘的像素）坐标。 必需 用于 `left_click`、`right_click`、`double_click`、`triple_click` 和 `scroll`。对于 `left_click_drag`，这是结束位置。"
+        },
+        "text": {
+          "type": "string",
+          "description": "发送至 类型（对于 `类型` 操作）的文本或要按下的 密钥（对于 `密钥` 操作）。对于 `密钥` 操作：提供空格分隔键（例如，“Backspace Backspace Delete”）。支持使用 平台 的修饰符 密钥 的键盘快捷键（在 Mac 上使用“cmd”，在 Windows/Linux 上使用“ctrl”，例如“cmd+a”或“ctrl+a”用于全选）。"
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 30,
+          "description": "等待的 数字 秒数。 必需 代表 `wait`。最多 30 秒。"
+        },
+        "scroll_direction": {
+          "type": "string",
+          "enum": [
+            "up",
+            "down",
+            "left",
+            "right"
+          ],
+          "description": "滚动的方向。 必需 代表 `scroll`。"
+        },
+        "scroll_amount": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "滚轮的 数字 滴答作响。 可选 表示 `scroll`，默认为 3。"
+        },
+        "start_coordinate": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "(x, y)：`left_click_drag` 的起始坐标。"
+        },
+        "region": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "(x0, y0, x1, y1)：要为 `zoom` 捕获的矩形区域。坐标定义从左上角 (x0, y0) 到右下角 (x1, y1) 的矩形，以视口原点的像素为单位。 必需 代表 `zoom` 操作。对于检查小 UI 元素（如图标、按钮或文本）很有用。"
+        },
+        "repeat": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 100,
+          "description": "重复 密钥 序列的 数字 次。仅适用于 `密钥` 操作。必须是 1 到 100 之间的正整数。默认值为 1。对于多次按箭头键等导航任务很有用。"
+        },
+        "ref": {
+          "type": "string",
+          "description": "来自 read_page 或查找工具的元素引用 ID（例如“ref_1”、“ref_2”）。 必需 代表 `scroll_to` 操作。可用作点击操作的 `coordinate` 的替代方案。"
+        },
+        "modifiers": {
+          "type": "string",
+          "description": "单击操作的修饰键。支持：“ctrl”、“shift”、“alt”、“cmd”（或“meta”）、“win”（或“windows”）。可以与“+”组合（例如“ctrl+shift”、“cmd+alt”）。 可选。"
+        },
+        "tabId": {
+          "type": "number",
+          "description": "用于执行 操作 的选项卡 ID。必须是当前组中的选项卡。如果您没有有效的选项卡 ID，请首先使用 tabs_context。"
+        }
+      },
+      "required": [
+        "action",
+        "tabId"
+      ]
+    }
+  },
+  {
+    "name": "find",
+    "description": "使用自然语言查找页面上的元素。可以按元素的用途（例如“搜索栏”、“登录按钮”）或按文本内容（例如“有机芒果产品”）搜索元素。返回最多 20 个匹配元素以及可与其他工具一起使用的引用。如果存在超过 20 个匹配项，系统会通知您使用更具体的 查询。如果您没有有效的选项卡 ID，请首先使用 tabs_context 来获取可用的选项卡。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "自然语言 描述 表示要查找的内容（例如，“搜索栏”、“添加到购物车按钮”、“包含有机产品的标题”）"
+        },
+        "tabId": {
+          "type": "number",
+          "description": "要搜索的选项卡 ID。必须是当前组中的选项卡。如果您没有有效的选项卡 ID，请首先使用 tabs_context。"
+        }
+      },
+      "required": [
+        "query",
+        "tabId"
+      ]
+    }
+  },
+  {
+    "name": "form_input",
+    "description": "使用 read_page 工具 中的元素引用 ID 在表单元素中设置值。如果您没有有效的选项卡 ID，请首先使用 tabs_context 来获取可用的选项卡。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "ref": {
+          "type": "string",
+          "description": "read_page 工具 中的元素引用 ID（例如，“ref_1”、“ref_2”）"
+        },
+        "value": {
+          "type": [
+            "string",
+            "boolean",
+            "number"
+          ],
+          "description": "要设置的值。对于复选框使用 布尔值，对于选择使用选项值或文本，对于其他输入使用适当的 字符串/数字"
+        },
+        "tabId": {
+          "type": "number",
+          "description": "要在其中设置表单值的选项卡 ID。必须是当前组中的选项卡。如果您没有有效的选项卡 ID，请首先使用 tabs_context。"
+        }
+      },
+      "required": [
+        "ref",
+        "value",
+        "tabId"
+      ]
+    }
+  },
+  {
+    "name": "get_page_text",
+    "description": "从页面中提取原始文本内容，优先考虑文章内容。非常适合阅读文章、博客文章或其他文本较多的页面。返回没有 HTML 格式的纯文本。如果您没有有效的选项卡 ID，请首先使用 tabs_context 来获取可用的选项卡。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "tabId": {
+          "type": "number",
+          "description": "要从中提取文本的选项卡 ID。必须是当前组中的选项卡。如果您没有有效的选项卡 ID，请首先使用 tabs_context。"
+        }
+      },
+      "required": [
+        "tabId"
+      ]
+    }
+  },
+  {
+    "name": "gif_creator",
+    "description": "管理浏览器自动化会话的 GIF 记录和导出。控制何时开始/停止记录浏览器操作（单击、滚动、导航），然后导出为带有视觉叠加层的动画 GIF（单击指示器、操作 标签、进度条、水印）。所有操作的范围都限于选项卡的组。开始录制时，立即截图以捕获初始状态作为第一帧。停止录制时，在之前截取最终状态作为最后一帧。对于导出，可以提供“坐标”以将上传拖放到页面元素，或者设置“下载：true”以下载 GIF。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "start_recording",
+            "stop_recording",
+            "export",
+            "clear"
+          ],
+          "description": "操作 执行：'start_recording'（开始捕获）、'stop_recording'（停止捕获但保留帧）、'export'（生成并导出 GIF）、'clear'（丢弃帧）"
+        },
+        "tabId": {
+          "type": "number",
+          "description": "用于标识此操作适用于哪个选项卡组的选项卡 ID"
+        },
+        "coordinate": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "用于拖放上传的视口坐标 [x, y]。 必需 表示“导出” 操作 除非“下载”为真。"
+        },
+        "download": {
+          "type": "boolean",
+          "description": "如果为 true，则下载 GIF 而不是拖放上传。仅适用于“导出”操作。"
+        },
+        "filename": {
+          "type": "string",
+          "description": "导出的 GIF 的 可选 文件名（默认值：'recording-[timestamp].gif'）。仅适用于“导出”操作。"
+        },
+        "options": {
+          "type": "object",
+          "description": "可选 GIF “导出”操作 的增强选项。 属性：showClickIndicators (bool)、showDragPaths (bool)、showActionLabels (bool)、showProgressBar (bool)、showWatermark (bool)、质量 (数字 1-30)。除质量外，所有默认值为 true（默认值：10）。",
+          "properties": {
+            "showClickIndicators": {
+              "type": "boolean",
+              "description": "在点击位置显示橙色圆圈（默认值：true）"
+            },
+            "showDragPaths": {
+              "type": "boolean",
+              "description": "显示拖动操作的红色箭头（默认值：true）"
+            },
+            "showActionLabels": {
+              "type": "boolean",
+              "description": "显示描述操作的黑色标签（默认值：true）"
+            },
+            "showProgressBar": {
+              "type": "boolean",
+              "description": "在底部显示橙色进度条（默认值：true）"
+            },
+            "showWatermark": {
+              "type": "boolean",
+              "description": "显示 Claude 徽标水印（默认值：true）"
+            },
+            "quality": {
+              "type": "number",
+              "description": "GIF 压缩质量，1-30（较低 = 质量较好，编码速度较慢）。默认值：10"
+            }
+          }
+        }
+      },
+      "required": [
+        "action",
+        "tabId"
+      ]
+    }
+  },
+  {
+    "name": "javascript_tool",
+    "description": "在当前页面的上下文中执行 JavaScript 代码。该代码在页面上下文中运行，并且可以与 DOM、窗口 对象 和页面变量进行交互。返回最后一个表达式的结果或任何抛出的错误。如果您没有有效的选项卡 ID，请首先使用 tabs_context 来获取可用的选项卡。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "type": "string",
+          "description": "必须设置为“javascript_exec”"
+        },
+        "text": {
+          "type": "string",
+          "description": "要执行的 JavaScript 代码。代码将在页面上下文中进行评估。最后一个表达式的结果将自动返回。不要使用“return”语句 - 只需编写要计算的表达式（例如，“window.myData.value”而不是“return window.myData.value”）。您可以 访问 并修改 DOM、调用页面函数以及与页面变量交互。"
+        },
+        "tabId": {
+          "type": "number",
+          "description": "要在其中执行代码的选项卡 ID。必须是当前组中的选项卡。如果您没有有效的选项卡 ID，请首先使用 tabs_context。"
+        }
+      },
+      "required": [
+        "action",
+        "text",
+        "tabId"
+      ]
+    },
+    "cache_control": {
+      "type": "ephemeral"
+    }
+  },
+  {
+    "name": "navigate",
+    "description": "导航到 URL，或浏览器历史记录中的 go 前进/后退。如果您没有有效的选项卡 ID，请首先使用 tabs_context 来获取可用的选项卡。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "要导航到的 URL。可以提供或不提供协议（默认为 https://）。使用“前进”到历史记录中的 go 前进，或使用“后退”到历史记录中的 go 后退。"
+        },
+        "tabId": {
+          "type": "number",
+          "description": "要导航的选项卡 ID。必须是当前组中的选项卡。如果您没有有效的选项卡 ID，请首先使用 tabs_context。"
+        }
+      },
+      "required": [
+        "url",
+        "tabId"
+      ]
+    }
+  },
+  {
+    "name": "read_console_messages",
+    "description": "从特定选项卡读取浏览器控制台消息（console.日志、console.错误、console.warn 等）。对于调试 JavaScript 错误、查看应用程序日志或了解浏览器控制台中发生的情况很有用。仅返回来自当前域的控制台消息。如果您没有有效的选项卡 ID，请首先使用 tabs_context 来获取可用的选项卡。重要提示：始终提供一个模式来过滤消息 - 如果没有模式，您可能会收到太多不相关的消息。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "tabId": {
+          "type": "number",
+          "description": "用于读取控制台消息的选项卡 ID。必须是当前组中的选项卡。如果您没有有效的选项卡 ID，请首先使用 tabs_context。"
+        },
+        "onlyErrors": {
+          "type": "boolean",
+          "description": "如果为 true，则仅返回 错误 和异常消息。默认值为 false（返回所有消息类型）。"
+        },
+        "clear": {
+          "type": "boolean",
+          "description": "如果为 true，请在阅读后清除控制台消息，以避免后续调用中出现重复。默认为 false。"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "用于过滤控制台消息的正则表达式模式。仅返回与此模式匹配的消息（例如，“错误|警告”用于查找错误和警告，“MyApp”用于过滤特定于应用程序的日志）。您应该始终提供一种模式，以避免收到太多不相关的消息。"
+        },
+        "limit": {
+          "type": "number",
+          "description": "最多返回 数字 条消息。默认为 100。仅当您需要更多结果时才增加。"
+        }
+      },
+      "required": [
+        "tabId"
+      ]
+    }
+  },
+  {
+    "name": "read_network_requests",
+    "description": "从特定选项卡读取 HTTP 网络请求（XHR、Fetch、文档、图像等）。对于调试 API 调用、监视网络活动或了解页面发出的请求很有用。返回当前页面发出的所有网络请求，包括跨域请求。当页面导航到不同的域时，请求会自动清除。如果您没有有效的选项卡 ID，请首先使用 tabs_context 来获取可用的选项卡。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "tabId": {
+          "type": "number",
+          "description": "用于读取网络请求的选项卡 ID。必须是当前组中的选项卡。如果您没有有效的选项卡 ID，请首先使用 tabs_context。"
+        },
+        "urlPattern": {
+          "type": "string",
+          "description": "可选 用于过滤请求的 URL 模式。仅返回 URL 包含此 字符串 的请求（例如，“/api/”用于过滤 API 调用，“示例.com”用于按域过滤）。"
+        },
+        "clear": {
+          "type": "boolean",
+          "description": "如果为 true，则在读取后清除网络请求，以避免后续调用重复。默认为 false。"
+        },
+        "limit": {
+          "type": "number",
+          "description": "返回请求的最大 数字 。默认为 100。仅当您需要更多结果时才增加。"
+        }
+      },
+      "required": [
+        "tabId"
+      ]
+    }
+  },
+  {
+    "name": "read_page",
+    "description": "获取页面上元素的可访问性树表示。默认情况下返回所有元素，包括不可见的元素。输出限制为 50000 个字符。如果输出超过此限制，您将收到一个 错误 要求您指定较小的深度或使用 ref_id 关注特定元素。可以选择仅过滤交互式元素。如果您没有有效的选项卡 ID，请首先使用 tabs_context 来获取可用的选项卡。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "type": "string",
+          "enum": [
+            "interactive",
+            "all"
+          ],
+          "description": "过滤元素：“交互式”仅适用于按钮/链接/输入，“全部”适用于所有元素，包括不可见的元素（默认值：所有元素）"
+        },
+        "tabId": {
+          "type": "number",
+          "description": "要读取的选项卡 ID。必须是当前组中的选项卡。如果您没有有效的选项卡 ID，请首先使用 tabs_context。"
+        },
+        "depth": {
+          "type": "number",
+          "description": "要遍历的树的最大深度（默认值：15）。如果输出太大，请使用较小的深度。"
+        },
+        "ref_id": {
+          "type": "string",
+          "description": "要读取的父元素的引用 ID。将返回指定元素及其所有子元素。当输出太大时，使用此功能可以将焦点集中在页面的特定部分。"
+        }
+      },
+      "required": [
+        "tabId"
+      ]
+    }
+  },
+  {
+    "name": "resize_window",
+    "description": "将当前浏览器窗口的大小调整为指定尺寸。对于测试响应式设计或设置特定的屏幕尺寸很有用。如果您没有有效的选项卡 ID，请首先使用 tabs_context 来获取可用的选项卡。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "type": "number",
+          "description": "目标 窗口宽度（以像素为单位）"
+        },
+        "height": {
+          "type": "number",
+          "description": "目标 窗口高度（以像素为单位）"
+        },
+        "tabId": {
+          "type": "number",
+          "description": "要获取其窗口的选项卡 ID。必须是当前组中的选项卡。如果您没有有效的选项卡 ID，请首先使用 tabs_context。"
+        }
+      },
+      "required": [
+        "width",
+        "height",
+        "tabId"
+      ]
+    }
+  },
+  {
+    "name": "tabs_context",
+    "description": "获取当前选项卡组中所有选项卡的上下文信息",
+    "input_schema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  {
+    "name": "tabs_create",
+    "description": "在当前选项卡组中创建一个新的空选项卡",
+    "input_schema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  {
+    "type": "custom",
+    "name": "turn_answer_start",
+    "description": "在您对本回合的 用户 进行文本回复之前调用此命令。每回合 必需 - 无论您是否拨打 工具 电话。致电后，写下您的回复。此后不再有任何工具。",
+    "input_schema": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  {
+    "type": "custom",
+    "name": "update_plan",
+    "description": "更新 计划并将其提交给 用户 批准，然后再继续。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "您将访问的域列表（例如，['github.com'、'stackoverflow.com']）。当 用户 接受该计划时，这些域名将被批准用于 会话。"
+        },
+        "approach": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "您将遵循的步骤的有序列表（例如，[“导航到主页”、“搜索 文档”、“提取 密钥 信息”]）。保持简洁 - 目标是 3-7 个步骤。"
+        }
+      },
+      "required": [
+        "domains",
+        "approach"
+      ]
+    }
+  },
+  {
+    "name": "upload_image",
+    "description": "将先前捕获的屏幕截图或 用户 上传的图像上传到 文件 输入或拖放 目标。支持两种方法：(1) ref - 用于定位特定元素，尤其是隐藏的 文件 输入，(2) 坐标 - 用于拖放到可见位置，例如 Google 文档。提供参考或坐标，而不是两者都提供。",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "imageId": {
+          "type": "string",
+          "description": "之前捕获的屏幕截图的 ID（来自计算机 工具 的屏幕截图 操作）或 用户 上传的图像"
+        },
+        "ref": {
+          "type": "string",
+          "description": "来自 read_page 或查找工具的元素引用 ID（例如“ref_1”、“ref_2”）。将此用于 文件 输入（尤其是隐藏的输入）或特定元素。提供参考或坐标，而不是两者都提供。"
+        },
+        "coordinate": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "用于拖放到可见位置的视口坐标 [x, y]。将其用于拖放目标，例如 Google 文档。提供参考或坐标，而不是两者都提供。"
+        },
+        "tabId": {
+          "type": "number",
+          "description": "目标 元素所在的选项卡 ID。这是图像将上传到的位置。"
+        },
+        "filename": {
+          "type": "string",
+          "description": "上传的 文件 的 可选 文件名（默认值：“image.png”）"
+        }
+      },
+      "required": [
+        "imageId",
+        "tabId"
+      ]
+    }
+  }
+]
